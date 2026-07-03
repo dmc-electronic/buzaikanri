@@ -77,7 +77,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .cam-box video{width:100%;display:block;height:220px;object-fit:cover;}
 /* Guide overlay inside camera */
 .cam-guide{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;}
-.cam-guide-rect{border:2px solid rgba(255,255,255,.8);border-radius:12px;width:220px;height:220px;box-shadow:0 0 0 9999px rgba(0,0,0,.4); z-index:4;}
+.cam-guide-rect{border:2px solid rgba(255,255,255,.8);border-radius:12px;width:220px;height:220px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);}
 .shutter{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:58px;height:58px;border-radius:50%;background:#fff;border:4px solid #7c3aed;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(124,58,237,.4);transition:transform .1s;z-index:5;}
 .shutter:active{transform:translateX(-50%) scale(.9);}
 .shutter svg{width:24px;height:24px;}
@@ -149,7 +149,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <!-- Menu 簿外 -->
     <div style="font-size:11px;font-weight:600;color:#9ca3af;padding:4px 8px;margin:8px 0 2px;">簿外管理 (Off-book)</div>
     <div class="sl" id="sl-bogai-add" onclick="go('bogai-add')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>簿外追加</div>
-    <div class="sl" id="sl-bogai-use" onclick="goBogai('use')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>簿外使用</div>
+    <div class="sl" id="sl-bogai-use" onclick="go('bogai-use')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>簿外使用</div>
 
     <div style="font-size:11px;font-weight:600;color:#9ca3af;padding:4px 8px;margin:8px 0 2px;">ADMIN</div>
     <div class="sl" id="sl-admin"   onclick="go('admin')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>管理（Admin）</div>
@@ -163,7 +163,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <!-- ══════ MAIN ══════ -->
 <div id="main-content">
 
-  <!-- HOME (Dashboard with 6 Grid Action Buttons) -->
+  <!-- HOME (compact dashboard) -->
   <div id="page-home" class="page">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
       <div>
@@ -182,34 +182,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <!-- Top3 critical -->
     <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">⚠️ 要補充 TOP3</div>
     <div id="home-top3"></div>
-    
-    <!-- 6 Grid Quick actions -->
-    <div style="margin-top:18px;">
-      <div style="font-size:12px;font-weight:700;color:#4b5563;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">簿内管理 (On-book Management)</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
-        <button onclick="go('add')" style="background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:12px 6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <span style="font-size:20px;">＋</span>部材追加
-        </button>
-        <button onclick="go('use')" style="background:#1d4ed8;color:#fff;border:none;border-radius:12px;padding:12px 6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <span style="font-size:20px;">－</span>部材使用
-        </button>
-        <button onclick="go('stock')" style="background:#059669;color:#fff;border:none;border-radius:12px;padding:12px 6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <span style="font-size:20px;">🔍</span>在庫確認
-        </button>
-      </div>
-      
-      <div style="font-size:12px;font-weight:700;color:#4b5563;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">簿外管理 (Off-book Management)</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-        <button onclick="go('bogai-add')" style="background:#8b5cf6;color:#fff;border:none;border-radius:12px;padding:12px 6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <span style="font-size:20px;">＋</span>簿外追加
-        </button>
-        <button onclick="goBogai('use')" style="background:#2563eb;color:#fff;border:none;border-radius:12px;padding:12px 6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <span style="font-size:20px;">－</span>簿外使用
-        </button>
-        <button onclick="goBogai('stock')" style="background:#10b981;color:#fff;border:none;border-radius:12px;padding:12px 6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
-          <span style="font-size:20px;">🔍</span>簿外確認
-        </button>
-      </div>
+    <!-- Quick actions -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+      <button onclick="go('add')" style="background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;">＋ 部材追加</button>
+      <button onclick="go('use')" style="background:#1d4ed8;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;">－ 部材使用</button>
     </div>
   </div>
 
@@ -294,9 +270,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
           <button onclick="resetAddScan()" style="background:#ede9fe;color:#5b21b6;border:none;padding:4px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;">再撮影</button>
         </div>
         <div style="background:#fff;border-radius:10px;padding:10px;margin-bottom:10px;">
-          <div style="font-size:11px;color:#9ca3af;margin-bottom:2px;">読み取り品番 (修正可能)</div>
-          <!-- Đổi nhãn tĩnh add-res-pno thành ô input sửa tay -->
-          <input id="add-res-pno" type="text" class="form-input font-bold" style="font-size:17px;color:#111827;letter-spacing:.5px;border-color:#7c3aed;text-transform:uppercase;margin-bottom:4px;"/>
+          <div style="font-size:11px;color:#9ca3af;margin-bottom:2px;">読み取り品番</div>
+          <div id="add-res-pno"  style="font-size:17px;font-weight:800;color:#111827;letter-spacing:.5px;word-break:break-all;"></div>
           <div id="add-res-name" style="font-size:14px;color:#374151;margin-top:4px;"></div>
           <div style="font-size:12px;color:#6b7280;margin-top:4px;">現在庫: <span id="add-res-qty" style="font-weight:700;color:#059669;"></span></div>
         </div>
@@ -384,19 +359,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
         <svg class="spin" fill="none" stroke="#7c3aed" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
         バーコードを解析中…
       </div>
-      <!-- Use Scan Result Card (Có ô input sửa tay và nút tra cứu) -->
       <div id="use-scan-result" style="display:none;" class="result-card">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <svg fill="none" stroke="#7c3aed" viewBox="0 0 24 24" style="width:17px;height:17px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           <span style="font-size:12px;color:#7c3aed;font-weight:700;flex:1;">解析完了</span>
           <button onclick="resetUseScan()" style="background:#ede9fe;color:#5b21b6;border:none;padding:4px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;">再撮影</button>
-        </div>
-        <div style="background:#fff;border-radius:10px;padding:12px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;">
-          <div>
-            <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:2px;">読み取り品番 (修正可能)</label>
-            <input id="use-res-pno-inp" type="text" class="form-input font-bold" style="font-size:16px;color:#111827;border-color:#7c3aed;text-transform:uppercase;"/>
-          </div>
-          <button onclick="queryCorrectedUsePno()" style="background:#7c3aed;color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;width:100%;">この品番で在庫を検索する</button>
         </div>
         <div id="use-scan-item"></div>
       </div>
@@ -493,9 +460,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     </div>
   </div>
 
-  <!-- ══════ 簿外使用・確認 (BOGAI USE & STOCK) ══════ -->
+  <!-- ══════ 簿外使用 (BOGAI USE) ══════ -->
   <div id="page-bogai-use" class="page hidden">
-    <div id="bogai-page-title" style="font-size:18px;font-weight:700;color:#111827;margin-bottom:14px;">簿外使用 (Off-book Use)</div>
+    <div style="font-size:18px;font-weight:700;color:#111827;margin-bottom:14px;">簿外使用 (Off-book Use)</div>
     <div class="search-wrap">
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
       <input id="bu-search-inp" class="search-bar" type="text" placeholder="在庫品名、区分、場所、備考等で検索 (Search Any Field)" oninput="debounce('bogai',()=>searchBogaiUse())"/>
@@ -615,8 +582,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div id="more-drawer">
   <div style="font-size:11px;font-weight:600;color:#9ca3af;padding:10px 20px 4px;">簿外管理 (Off-book)</div>
   <div class="drawer-item" onclick="go('bogai-add');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>簿外追加</div>
-  <div class="drawer-item" onclick="goBogai('use');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>簿外使用</div>
-  <div class="drawer-item" onclick="goBogai('stock');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>簿外確認</div>
+  <div class="drawer-item" onclick="go('bogai-use');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>簿外使用</div>
   <div style="height:1px;background:#f3f4f6;margin:4px 20px;"></div>
   <div class="drawer-item" onclick="go('history');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>履歴確認</div>
   <div class="drawer-item" onclick="go('admin');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>管理（Admin）</div>
@@ -630,7 +596,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 // ════════════════════════════════════════════════
 // CONFIG — RenderのURLを設定してください
 // ════════════════════════════════════════════════
-const API = "https://buzaikanri-p5o9.onrender.com";  
+const API = "https://buzaikanri.onrender.com";  
 const CACHE_TTL_MS   = 3 * 60 * 1000;  // 在庫キャッシュ有効期限 3分
 const RENDER_PAGE    = 40;              // 一度にレンダリングする行数
 
@@ -673,28 +639,47 @@ function preprocessCanvasForOCR(canvas) {
 }
 
 // ════════════════════════════════════════════════
-// HÀM BỔ TRỢ 2: Thuật toán tự động sửa lỗi chính tả tổng quát
+// HÀM BỔ TRỢ 2: Thuật toán tự động sửa lỗi chính tả dựa trên cấu trúc mã
 // ════════════════════════════════════════════════
 function correctOcrPartNumber(raw) {
   let s = raw.toUpperCase().replace(/[\s\-_]/g, ''); // Loại bỏ khoảng trắng, gạch ngang
   if (!s) return s;
   
-  // Sửa lỗi dựa trên vùng lân cận (không ép buộc phần đầu hay cuối phải là số hay chữ)
-  // Nếu ký tự O nằm kẹp giữa các chữ số, đổi thành số 0
-  s = s.replace(/(\d)O(\d)/g, '$10$2');
-  s = s.replace(/(\d)O/g, '$10');
-  s = s.replace(/O(\d)/g, '0$1');
+  // 1. Sửa các lỗi xen kẽ cơ bản (nếu chữ cái nằm giữa các số thì chuyển thành số)
+  s = s.replace(/(?<=\d)O(?=\d)/g, '0');
+  s = s.replace(/(?<=\d)O/g, '0');
+  s = s.replace(/O(?=\d)/g, '0');
+  s = s.replace(/(?<=\d)[IL](?=\d)/g, '1');
+  s = s.replace(/(?<=\d)[IL]/g, '1');
+  s = s.replace(/[IL](?=\d)/g, '1');
 
-  // Nếu ký tự I hoặc L nằm kẹp giữa các chữ số, đổi thành số 1
-  s = s.replace(/(\d)[IL](\d)/g, '$11$2');
-  s = s.replace(/(\d)[IL]/g, '$11');
-  s = s.replace(/[IL](\d)/g, '1$1');
-
+  // 2. Áp dụng quy tắc cấu trúc cho mã dài (Từ 11 ký tự trở lên, bắt đầu bằng N, M, K)
+  // Ví dụ: N510026293AA -> Ký tự đầu là chữ, 2 ký tự cuối là chữ, ở giữa hoàn toàn là số
+  if (s.length >= 11 && /^[NMK]/i.test(s)) {
+    let first = s[0];
+    let middle = s.substring(1, s.length - 2);
+    let suffix = s.substring(s.length - 2);
+    
+    // Thân mã bắt buộc phải là số:
+    middle = middle.replace(/O/g, '0')
+                   .replace(/[IL]/g, '1')
+                   .replace(/S/g, '5')
+                   .replace(/B/g, '8')
+                   .replace(/Z/g, '2');
+                   
+    // Đuôi mã bắt buộc phải là chữ (thường là AA, AB, KB, v.v.):
+    suffix = suffix.replace(/4/g, 'A')
+                   .replace(/0/g, 'O')
+                   .replace(/1/g, 'I');
+                   
+    s = first + middle + suffix;
+  }
+  
   return s;
 }
 
 // ════════════════════════════════════════════════
-// HÀM CHÍNH: Quét ảnh và phân tích mã (Sử dụng 'eng+jpn' để đọc được 品名 tiếng Nhật)
+// HÀM CHÍNH: Quét ảnh và phân tích mã
 // ════════════════════════════════════════════════
 async function extractPartsFromImage(canvas) {
   const spinSvg = `<svg class="spin" fill="none" stroke="#7c3aed" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>`;
@@ -712,10 +697,9 @@ async function extractPartsFromImage(canvas) {
   setOcrProgress('OCRモデルを読込中...');
 
   try {
-    // Đọc đồng thời cả tiếng Anh (eng) và tiếng Nhật (jpn) để quét được chữ Kanji/Katakana/Hiragana
     const result = await Tesseract.recognize(
       canvas,
-      'eng+jpn',
+      'eng',
       {
         logger: m => {
           if (m.status === 'recognizing text') {
@@ -750,7 +734,7 @@ async function extractPartsFromImage(canvas) {
         }
       }
 
-      // Tìm nhãn "品名" (Trích xuất thành công Katakana/Kanji nhờ gói jpn)
+      // Tìm nhãn "品名"
       if (/品名/i.test(line)) {
         const inlineName = line.replace(/品名/i, '').replace(/[\s:：]/g, '').trim();
         if (inlineName) {
@@ -776,7 +760,7 @@ async function extractPartsFromImage(canvas) {
       throw new Error('品番が読み取れませんでした。文字が水平になるよう明るい場所で再撮影してください。');
     }
 
-    // Bước 2: Chạy thuật toán tự động sửa lỗi chính tả tổng quát (0/O, A/4) cho mã phụ tùng vừa quét được
+    // Bước 2: Chạy thuật toán tự động sửa lỗi chính tả (0/O, A/4) cho mã phụ tùng vừa quét được
     const correctedPartNo = correctOcrPartNumber(part_no);
     console.log(`[OCR Correction] Original: ${part_no} -> Corrected: ${correctedPartNo}`);
 
@@ -815,17 +799,6 @@ let activeBogaiInline = null;
 // Cart Management States
 let cartItems = [];
 let lastUsedItems = [];
-
-// 6 Buttons Navigation Logic (On-book / Off-book)
-let bogaiMode = 'use'; // 'use' or 'stock'
-function goBogai(mode) {
-  bogaiMode = mode;
-  const el = $('bogai-page-title');
-  if (el) {
-    el.textContent = mode === 'use' ? '簿外使用 (Off-book Use)' : '簿外在庫確認 (Off-book Stock)';
-  }
-  go('bogai-use');
-}
 
 const _dbt = {};
 function debounce(key, fn, ms=300){
@@ -1174,9 +1147,7 @@ async function analyzeAddCanvas(c){
 
   const pn = ocr.part_no;
   const ocrName = ocr.name || '';
-  
-  // Hiển thị mã nhận diện vào ô input để cho phép sửa tay
-  $('add-res-pno').value = pn;
+  $('add-res-pno').textContent = pn;
 
   const base = $('add-base-select').value;
   let r = cacheGet(pn, base);
@@ -1200,26 +1171,6 @@ async function analyzeAddCanvas(c){
     addScanData={part_no:pn,name:ocrName,qty:0,base:base,location:'',is_new:true};
   }
   $('add-res-qty-inp').value=''; show('add-result-card'); $('add-result-card').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-
-async function submitScanAdd(){
-  if(!addScanData) return;
-  const qty=parseInt($('add-res-qty-inp').value);
-  if(isNaN(qty)||qty<1){ toast('数量を入力してください',true); return; }
-  
-  // Đọc mã cuối cùng đã được người dùng chỉnh sửa từ ô input
-  const finalPartNo = $('add-res-pno').value.trim().toUpperCase();
-  if(!finalPartNo) { toast('品番を入力してください', true); return; }
-
-  const finalLoc = $('add-res-location-inp').value.trim();
-  let name=addScanData.name;
-  if(addScanData.is_new){ name=$('add-res-name-inp').value.trim(); if(!name){toast('品名を入力してください',true);return;} }
-  if(!API){ toast('APIが設定保存されていません',true); return; }
-  try {
-    await apiFetch('/stock/add',{method:'POST',body:JSON.stringify({part_no:finalPartNo,name,qty,base:addScanData.base,location:finalLoc,user:currentUser||'ゲスト'})});
-    toast(`✓ ${addScanData.base} 拠点 [保管場所: ${finalLoc || '未指定'}] に品番「${finalPartNo}」数量 ${qty} 件を追加しました`);
-    await refreshCache(true); resetAddScan();
-  }catch(e){ toast(e.message,true); }
 }
 
 // ════════════════════════════════════════════════
@@ -1519,35 +1470,6 @@ async function captureUse(){
   await analyzeUseCanvas(c);
 }
 
-// Truy vấn phụ tùng ở trang sử dụng sau khi người dùng sửa tay (nếu có nhầm lẫn)
-async function queryCorrectedUsePno() {
-  const pn = $('use-res-pno-inp').value.trim().toUpperCase();
-  const base = $('use-base-select').value;
-  if(!pn){ toast('品番を入力してください', true); return; }
-  
-  let r = cacheGet(pn, base);
-  if(!r && API){
-    try{ r = await apiFetch(`/stock/search?part_no=${encodeURIComponent(pn)}&base=${encodeURIComponent(base)}`); }catch(e){ toast(e.message, true); return; }
-  }
-  if(r?.part_no){
-    $('use-scan-item').innerHTML = `
-      <div class="item-card" onclick="openUseConfirm('${esc(r.part_no)}','${escJS(r.name)}',${r.qty},'${escJS(r.location)}')" style="cursor:pointer; margin-top:8px;">
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:11px;color:#7c3aed;font-weight:700;">拠点: ${esc(r.base)} | 保管場所: ${esc(r.location || '未設定')}</div>
-          <div style="font-size:14px;font-weight:700;color:#111827;margin-top:2px;">${esc(r.part_no)}</div>
-          <div style="font-size:13px;color:#4b5563;">${esc(r.name)}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;min-width:60px;">
-          <div style="font-size:20px;font-weight:700;color:${qtyColor(r.qty)};">${r.qty}</div>
-          <div style="font-size:10px;color:#9ca3af;">在庫</div>
-        </div>
-      </div>`;
-    openUseConfirm(r.part_no, r.name, r.qty, r.location);
-  } else {
-    $('use-scan-item').innerHTML = `<p style="color:#ef4444;font-size:13px;text-align:center;padding:12px;font-weight:600;">品番 "${pn}" は当拠点 [${base}] に未登録です</p>`;
-  }
-}
-
 async function analyzeUseCanvas(c){
   show('use-analyzing'); hide('use-fail-card'); hide('use-scan-result');
   let ocr;
@@ -1560,13 +1482,31 @@ async function analyzeUseCanvas(c){
   hide('use-analyzing');
 
   const pn = ocr.part_no;
-  
-  // Gán mã đọc được vào ô input sửa tay
-  $('use-res-pno-inp').value = pn;
-  show('use-scan-result');
-  
-  // Tự động kiểm tra tồn kho lần đầu
-  queryCorrectedUsePno();
+  const base = $('use-base-select').value;
+  let r = cacheGet(pn, base);
+  if(!r && API){
+    try{ r=await apiFetch(`/stock/search?part_no=${encodeURIComponent(pn)}&base=${encodeURIComponent(base)}`); }catch(e){ toast(e.message,true); resetUseScanUI(); return; }
+  }
+  if(r?.part_no){
+    show('use-scan-result');
+    $('use-scan-item').innerHTML=`
+      <div class="item-card" onclick="openUseConfirm('${esc(r.part_no)}','${escJS(r.name)}',${r.qty},'${escJS(r.location)}')" style="cursor:pointer;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;color:#7c3aed;font-weight:700;">拠点: ${esc(r.base)} | 保管場所: ${esc(r.location || '未設定')}</div>
+          <div style="font-size:14px;font-weight:700;color:#111827;margin-top:2px;">${esc(r.part_no)}</div>
+          <div style="font-size:13px;color:#4b5563;">${esc(r.name)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;min-width:60px;">
+          <div style="font-size:20px;font-weight:700;color:${qtyColor(r.qty)};">${r.qty}</div>
+          <div style="font-size:10px;color:#9ca3af;">在庫</div>
+        </div>
+      </div>`;
+    $('use-scan-result').scrollIntoView({behavior:'smooth',block:'nearest'});
+    openUseConfirm(r.part_no,r.name,r.qty,r.location);
+  }else{
+    $('use-fail-card').querySelector('div').textContent=`品番 "${pn}" は当拠点 [${base}] に未登録です`;
+    show('use-fail-card');
+  }
 }
 
 async function searchMulti(){
@@ -1646,7 +1586,7 @@ async function submitBogaiAdd(){
 }
 
 // ════════════════════════════════════════════════
-// 簿外使用 (BOGAI USE) & 簿外在庫確認
+// 簿外使用 (BOGAI USE)
 // ════════════════════════════════════════════════
 function initBogaiUse(){
   $('bu-search-inp').value = '';
@@ -1673,25 +1613,9 @@ function renderBogaiList(items){
   $('bu-list').innerHTML = items.map(it => {
     const safeId = it.item_name.replace(/[^a-zA-Z0-9]/g,'_');
     const safeNameJS = escJS(it.item_name);
-    
-    // Nếu ở chế độ tra cứu tồn kho (stock), click vào thẻ sẽ không mở panel nhập số lượng sử dụng vật tư
-    const clickAttr = bogaiMode === 'use' ? `onclick="toggleBogaiInline('${safeId}', '${safeNameJS}', ${it.qty})"` : '';
-    const cursorStyle = bogaiMode === 'use' ? 'cursor:pointer;' : '';
-    
-    const inlinePanelHtml = bogaiMode === 'use' ? `
-      <div class="inline-panel" id="binline-${safeId}" style="display:none; padding: 10px; background: #faf5ff; border: 1px solid #e5e7eb; border-top:none; border-radius:0 0 10px 10px;">
-        <div style="display:flex;gap:8px;align-items:center;">
-          <div style="flex:1;">
-            <label style="font-size:11px;color:#6b7280;display:block;margin-bottom:4px;">使用数量を入力</label>
-            <input id="binline-qty-${safeId}" type="number" min="1" class="form-input" style="padding:8px 12px;font-size:15px;background:#fff;" placeholder="0"/>
-          </div>
-          <button onclick="submitBogaiUse('${safeId}', '${safeNameJS}', ${it.qty})" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;margin-top:16px;">簿外使用</button>
-        </div>
-      </div>` : '';
-
     return `
     <div>
-      <div class="item-card" id="bcard-${safeId}" style="${cursorStyle} z-index:2; position:relative;" ${clickAttr}>
+      <div class="item-card" id="bcard-${safeId}" onclick="toggleBogaiInline('${safeId}', '${safeNameJS}', ${it.qty})" style="cursor:pointer; z-index:2; position:relative;">
         <div style="flex:1;min-width:0;">
           <div style="font-size:11px;color:#6b7280;">${esc(it.category)} | ${esc(it.condition)}</div>
           <div style="font-size:14px;font-weight:600;color:#111827;">${esc(it.item_name)}</div>
@@ -1703,20 +1627,55 @@ function renderBogaiList(items){
           <div style="font-size:10px;color:#9ca3af;">在庫</div>
         </div>
       </div>
-      ${inlinePanelHtml}
+      <div class="inline-panel" id="binline-${safeId}" style="display:none; padding: 10px; background: #faf5ff; border: 1px solid #e5e7eb; border-top:none; border-radius:0 0 10px 10px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="flex:1;">
+            <label style="font-size:11px;color:#6b7280;display:block;margin-bottom:4px;">使用数量を入力</label>
+            <input id="binline-qty-${safeId}" type="number" min="1" class="form-input" style="padding:8px 12px;font-size:15px;background:#fff;" placeholder="0"/>
+          </div>
+          <button onclick="submitBogaiUse('${safeId}', '${safeNameJS}', ${it.qty})" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;margin-top:16px;">簿外使用</button>
+        </div>
+      </div>
     </div>`;
   }).join('');
 }
 
-// 6 Buttons Navigation Logic (On-book / Off-book)
-let bogaiMode = 'use'; // 'use' or 'stock'
-function goBogai(mode) {
-  bogaiMode = mode;
-  const el = $('bogai-page-title');
-  if (el) {
-    el.textContent = mode === 'use' ? '簿外使用 (Off-book Use)' : '簿外在庫確認 (Off-book Stock)';
+function toggleBogaiInline(id, name, stock) {
+  if (activeBogaiInline && activeBogaiInline !== id) {
+    const oldPanel = $('binline-' + activeBogaiInline);
+    if(oldPanel) oldPanel.style.display = 'none';
+    const oldCard = $('bcard-' + activeBogaiInline);
+    if(oldCard) oldCard.classList.remove('has-inline');
   }
-  go('bogai-use');
+  const panel = $('binline-' + id);
+  const card = $('bcard-' + id);
+  if (panel.style.display === 'none' || panel.style.display === '') {
+    panel.style.display = 'block'; 
+    card.classList.add('has-inline'); 
+    activeBogaiInline = id;
+    setTimeout(() => { const inp = $('binline-qty-'+id); if(inp) inp.focus(); }, 100);
+  } else {
+    panel.style.display = 'none'; 
+    card.classList.remove('has-inline'); 
+    activeBogaiInline = null;
+  }
+}
+
+async function submitBogaiUse(id, name, stock){
+  const qtyInp = $('binline-qty-'+id); if(!qtyInp) return;
+  const qty = parseInt(qtyInp.value);
+  if(isNaN(qty)||qty<1){ toast('数量を入力してください', true); return; }
+  if(qty>stock){ toast(`在庫数 (${stock}) を超えています`, true); return; }
+  
+  qtyInp.disabled = true;
+  try{
+    await apiFetch('/bogai/use',{method:'POST',body:JSON.stringify({item_name: name, qty: qty, user: currentUser})});
+    toast(`✓ 簿外 ${name} を ${qty} 使用しました`);
+    searchBogaiUse(); 
+  }catch(e){ 
+    toast(e.message, true); 
+    qtyInp.disabled = false; 
+  }
 }
 
 // ════════════════════════════════════════════════
