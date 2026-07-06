@@ -73,7 +73,7 @@ WS_BOGAI   = "簿外"
 # ══════════════════════════════════════════════════
 # シートヘッダー初期化
 # ══════════════════════════════════════════════════
-STOCK_HEADERS   = ["品番", "品名", "数量", "拠点", "保管場所", "更新日時"]
+STOCK_HEADERS   = ["品番", "品名", "数量", "拠点", "保管場所", "更新日時", "備考"]
 HISTORY_HEADERS = ["操作日時", "操作ユーザー", "品番", "品名", "数量", "区分"]
 USERS_HEADERS   = ["ユーザー名", "パスワードハッシュ", "管理者"]
 BOGAI_HEADERS   = ["在庫品", "区分", "状態", "数量", "更新日", "保管場所", "備考"]
@@ -150,6 +150,7 @@ def get_stock_item(part_no: str, base: str) -> Optional[Dict[str, Any]]:
         "base": row[3] if len(row)>3 else "",
         "location": row[4] if len(row)>4 else "",
         "updated_at": row[5] if len(row)>5 else "",
+        "remarks": row[6].strip() if len(row)>6 else "",
     }
 
 def get_all_stock() -> List[Dict[str, Any]]:
@@ -175,10 +176,11 @@ def get_all_stock() -> List[Dict[str, Any]]:
             "base": base_val,
             "location": loc_val,
             "updated_at": row[5] if len(row)>5 else "",
+            "remarks": row[6].strip() if len(row)>6 else "",
         })
     return result
 
-def upsert_stock(part_no: str, name: str, delta: int, base: str, location: str, user: str, action: str) -> Dict[str, Any]:
+def upsert_stock(part_no: str, name: str, delta: int, base: str, location: str, user: str, action: str, remarks: str = "") -> Dict[str, Any]:
     ws = open_sheet(WS_STOCK)
     row_no = find_stock_row(ws, part_no, base)
     now = jst_now()
@@ -187,15 +189,16 @@ def upsert_stock(part_no: str, name: str, delta: int, base: str, location: str, 
         current_qty = int(row[2]) if len(row)>2 and str(row[2]).lstrip("-").isdigit() else 0
         new_qty = current_qty + delta
         if new_qty < 0: raise HTTPException(status_code=400, detail=f"在庫不足: 現在 {current_qty}, 使用 {abs(delta)}")
-        ws.update(f"C{row_no}:F{row_no}", [[str(new_qty), base, location, now]])
+        final_remarks = remarks if remarks else (row[6] if len(row)>6 else "")
+        ws.update(f"C{row_no}:G{row_no}", [[str(new_qty), base, location, now, final_remarks]])
         final_name = row[1] if len(row)>1 else name
     else:
         if delta < 0: raise HTTPException(status_code=404, detail="該当する品番と拠点の組み合わせが見つかりません")
-        new_qty = delta; final_name = name
-        ws.append_row([part_no, final_name, str(new_qty), base, location, now])
+        new_qty = delta; final_name = name; final_remarks = remarks
+        ws.append_row([part_no, final_name, str(new_qty), base, location, now, final_remarks])
 
     append_history(user, part_no, f"{final_name} ({base} - {location})", abs(delta), action)
-    return {"part_no": part_no, "name": final_name, "qty": new_qty, "base": base, "location": location, "updated_at": now}
+    return {"part_no": part_no, "name": final_name, "qty": new_qty, "base": base, "location": location, "updated_at": now, "remarks": final_remarks}
 
 def set_stock_qty(part_no: str, name: str, qty: int, base: str, location: str, user: str) -> Dict[str, Any]:
     ws = open_sheet(WS_STOCK)
@@ -349,7 +352,7 @@ def ensure_admin_user() -> None:
 # Pydantic スキーマ
 # ══════════════════════════════════════════════════
 class LoginRequest(BaseModel): username: str; password: str
-class AddRequest(BaseModel): part_no: str; name: str; qty: int; base: str = "川口"; location: str = ""; user: str = "ゲスト"
+class AddRequest(BaseModel): part_no: str; name: str; qty: int; base: str = "川口"; location: str = ""; remarks: str = ""; user: str = "ゲスト"
 class UseRequest(BaseModel): part_no: str; qty: int; base: str = "川口"; user: str = "ゲスト"
 class MultiSearchRequest(BaseModel): part_nos: List[str]; base: str = "川口"
 class AdminEditRequest(BaseModel): part_no: str; name: str; qty: int; base: str = "川口"; location: str = ""; user: str = "admin"
@@ -436,7 +439,7 @@ def multi_search(body: MultiSearchRequest):
 @app.post("/stock/add")
 def add_stock(body: AddRequest):
     if body.qty < 1: raise HTTPException(status_code=400, detail="数量は1以上を入力してください")
-    return upsert_stock(body.part_no, body.name, body.qty, body.base, body.location, body.user, "add")
+    return upsert_stock(body.part_no, body.name, body.qty, body.base, body.location, body.user, "add", body.remarks)
 
 @app.post("/stock/use")
 def use_stock(body: UseRequest):
@@ -510,7 +513,7 @@ def admin_export(data_type: str, _=Depends(get_admin_user)):
     writer = csv.writer(output)
     if data_type == "stock":
         writer.writerow(STOCK_HEADERS)
-        for it in get_all_stock(): writer.writerow([it["part_no"], it["name"], it["qty"], it["base"], it["location"], it["updated_at"]])
+        for it in get_all_stock(): writer.writerow([it["part_no"], it["name"], it["qty"], it["base"], it["location"], it["updated_at"], it.get("remarks","")])
         filename = f"stock_{jst_now()[:10]}.csv"
     elif data_type == "history":
         writer.writerow(HISTORY_HEADERS)
