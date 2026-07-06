@@ -780,6 +780,26 @@ async function extractPartsFromImage(canvas) {
           }
         }
       }
+
+      // Tìm nhãn "品名" (Trích xuất Katakana/Kanji/Hiragana)
+      if (/品名/i.test(line)) {
+        const inlineName = line.replace(/品名/i, '').replace(/[\s:：]/g, '').trim();
+        if (inlineName) {
+          name = inlineName;
+        } else if (i + 1 < lines.length) {
+          name = lines[i + 1].trim();
+        }
+      }
+
+      // Tìm nhãn "PART NAME" (Tiếng Anh)
+      if (/PART\s*NAME/i.test(line)) {
+        const inlineEng = line.replace(/PART\s*NAME/i, '').replace(/[\s:：]/g, '').trim();
+        if (inlineEng) {
+          part_name_eng = inlineEng;
+        } else if (i + 1 < lines.length) {
+          part_name_eng = lines[i + 1].trim();
+        }
+      }
     }
 
     // Nếu không thấy nhãn, quét tự do tìm chuỗi ký tự bắt đầu bằng N, M, K kéo dài từ 5 ký tự trở lên
@@ -795,53 +815,6 @@ async function extractPartsFromImage(canvas) {
 
     if (!part_no) {
       throw new Error('品番が読み取れませんでした。文字が水平になるよう明るい場所で再撮影してください。');
-    }
-
-    // ════════════════════════════════════════════════
-    // Trích xuất 品名 (tiếng Nhật) và PART NAME (tiếng Anh)
-    // Nhãn Panasonic có chữ nhãn rất nhỏ + giá trị dùng font khác (kiểu con dấu),
-    // nên Tesseract thường đọc lệch dòng hoặc không nhận đúng 2 chữ "品名".
-    // => Dùng 2 tầng: (1) regex tìm theo nhãn chữ trên toàn văn bản,
-    //    (2) dự phòng theo vị trí + đặc điểm ký tự nếu tầng 1 thất bại.
-    // ════════════════════════════════════════════════
-    const JP_CHAR = '\\u30A0-\\u30FF\\u3040-\\u309F\\u4E00-\\u9FFF';
-
-    // Tầng 1: tìm trực tiếp theo nhãn chữ, cho phép nhãn & giá trị cách nhau (kể cả xuống dòng)
-    const jpMatch = fullText.match(new RegExp(`品\\s*名[^\\S\\r\\n]{0,3}[:：]?[\\s\\S]{0,8}?([${JP_CHAR}][${JP_CHAR}ー]{0,19})`));
-    if (jpMatch) name = jpMatch[1].trim();
-
-    const engMatch = fullText.match(/PART\s*NAME[^\S\r\n]{0,3}[:：]?[^\n\r]{0,3}?([A-Za-z][A-Za-z0-9,\-\s']{1,40})/i);
-    if (engMatch) part_name_eng = engMatch[1].trim().toUpperCase().replace(/\s+/g, ' ');
-
-    // Tầng 2: dự phòng — quét các dòng ngay sau dòng chứa mã 品番, phân loại theo đặc điểm ký tự
-    if (!name || !part_name_eng) {
-      const FORBIDDEN_EXACT = ['品番','品名','数量',"Q'TY",'QTY','PARTNO','PARTNAME','MADEINJAPAN','MADE','JAPAN','PC','PK'];
-      let startIdx = lines.findIndex(l => l.toUpperCase().replace(/[\s\-]/g, '').includes(part_no));
-      if (startIdx === -1) startIdx = 0;
-
-      for (let i = startIdx + 1; i < Math.min(lines.length, startIdx + 8); i++) {
-        const raw = lines[i];
-        const clean = raw.replace(/[\s:：]/g, '');
-        if (!clean) continue;
-        if (/panasonic|co\.,?\s*ltd|チャック|回路形成|プロセス|事業部/i.test(raw)) continue; // dòng tên công ty/nhà máy
-        if (/^\d[\d\s\-]*$/.test(clean)) continue; // dòng toàn số (ngày tháng, lô, số lượng)
-
-        const upperClean = clean.toUpperCase();
-        if (FORBIDDEN_EXACT.includes(clean) || FORBIDDEN_EXACT.includes(upperClean)) continue;
-
-        const jpRegex = new RegExp(`[${JP_CHAR}]`, 'g');
-        const jpCharCount = (clean.match(jpRegex) || []).length;
-        const isMostlyJapanese = jpCharCount >= Math.max(1, Math.ceil(clean.length * 0.5));
-        const isMostlyLatin = /^[A-Za-z][A-Za-z0-9,\-\s']{2,40}$/.test(raw) && !/MADE|JAPAN|PART|NAME/i.test(raw);
-
-        if (!name && isMostlyJapanese) {
-          name = clean.replace(/^品名/, '');
-        } else if (!part_name_eng && isMostlyLatin) {
-          part_name_eng = raw.trim().toUpperCase();
-        }
-
-        if (name && part_name_eng) break;
-      }
     }
 
     // Bước 2: Chạy thuật toán tự động sửa lỗi chính tả tổng quát (0/O, A/4) cho mã phụ tùng vừa quét được
