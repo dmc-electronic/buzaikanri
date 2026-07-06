@@ -1366,15 +1366,18 @@ function renderUseList(cid, items){
   if(!items?.length){ c.innerHTML=emptyMsg(cacheIsValid()?'該当なし':'キャッシュが空です'); return; }
   const show50=items.slice(0,RENDER_PAGE);
   c.innerHTML=show50.map(it=>`
-    <div class="item-card" onclick="quickAddToCart('${esc(it.part_no)}','${escJS(it.name)}',${it.qty},'${escJS(it.location)}')" style="cursor:pointer;">
+    <div class="item-card" style="align-items:center;">
       <div style="flex:1;min-width:0;">
         <div style="font-size:11px;color:#7c3aed;font-weight:700;">拠点: ${esc(it.base)} | 保管場所: ${esc(it.location || '未設定')}</div>
         <div style="font-size:14px;font-weight:700;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;">${esc(it.part_no)}</div>
         <div style="font-size:13px;color:#4b5563;">${esc(it.name)}</div>
       </div>
-      <div style="text-align:right;flex-shrink:0;min-width:60px;">
-        <div style="font-size:20px;font-weight:700;color:${qtyColor(it.qty)};">${it.qty}</div>
-        <div style="font-size:10px;color:#9ca3af;">在庫数</div>
+      <div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <div>
+          <div style="font-size:20px;font-weight:700;color:${qtyColor(it.qty)};">${it.qty}</div>
+          <div style="font-size:10px;color:#9ca3af;">在庫数</div>
+        </div>
+        <button onclick="quickAddToCart('${esc(it.part_no)}','${escJS(it.name)}',${it.qty},'${escJS(it.location)}')" style="background:#7c3aed;color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">+ カートに追加</button>
       </div>
     </div>`).join('');
   if(items.length>RENDER_PAGE) c.innerHTML+=`<p style="font-size:12px;color:#9ca3af;text-align:center;padding:8px;">… 他 ${items.length-RENDER_PAGE} 件</p>`;
@@ -1459,6 +1462,10 @@ function addToCart() {
 function updateCartUI() {
   const section = $('use-cart-section');
   const list = $('use-cart-list');
+
+  const badge = $('cart-badge-count');
+  if (badge) badge.textContent = cartItems.reduce((sum, it) => sum + it.qty, 0);
+
   if (!section || !list) return;
 
   if ($('use-success-section') && $('use-success-section').style.display !== 'none') {
@@ -1587,6 +1594,7 @@ function downloadAndGoHome() {
 
   cartItems = [];
   lastUsedItems = [];
+  updateCartUI();
 
   hide('use-success-section');
   const mode = document.querySelector('#page-use .mode-tab.active')?.id?.replace('use-tab-', '') || 'pno';
@@ -1643,18 +1651,20 @@ async function queryCorrectedUsePno() {
   }
   if(r?.part_no){
     $('use-scan-item').innerHTML = `
-      <div class="item-card" onclick="quickAddToCart('${esc(r.part_no)}','${escJS(r.name)}',${r.qty},'${escJS(r.location)}')" style="cursor:pointer; margin-top:8px;">
+      <div class="item-card" style="margin-top:8px;align-items:center;">
         <div style="flex:1;min-width:0;">
           <div style="font-size:11px;color:#7c3aed;font-weight:700;">拠点: ${esc(r.base)} | 保管場所: ${esc(r.location || '未設定')}</div>
           <div style="font-size:14px;font-weight:700;color:#111827;margin-top:2px;">${esc(r.part_no)}</div>
           <div style="font-size:13px;color:#4b5563;">${esc(r.name)}</div>
         </div>
-        <div style="text-align:right;flex-shrink:0;min-width:60px;">
-          <div style="font-size:20px;font-weight:700;color:${qtyColor(r.qty)};">${r.qty}</div>
-          <div style="font-size:10px;color:#9ca3af;">在庫</div>
+        <div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <div>
+            <div style="font-size:20px;font-weight:700;color:${qtyColor(r.qty)};">${r.qty}</div>
+            <div style="font-size:10px;color:#9ca3af;">在庫</div>
+          </div>
+          <button onclick="quickAddToCart('${esc(r.part_no)}','${escJS(r.name)}',${r.qty},'${escJS(r.location)}')" style="background:#7c3aed;color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">+ カートに追加</button>
         </div>
       </div>`;
-    quickAddToCart(r.part_no, r.name, r.qty, r.location);
   } else {
     $('use-scan-item').innerHTML = `<p style="color:#ef4444;font-size:13px;text-align:center;padding:12px;font-weight:600;">品番 "${pn}" は当拠点 [${base}] に未登録です</p>`;
   }
@@ -1703,15 +1713,18 @@ async function searchMulti(){
 function renderMultiResults(res){
   if(!res.length){ $('use-multi-list').innerHTML=emptyMsg('該当なし'); return; }
   $('use-multi-list').innerHTML=res.map(it=>it.found
-    ?`<div class="item-card multi-reg" onclick="quickAddToCart('${esc(it.part_no)}','${escJS(it.name)}',${it.qty},'${escJS(it.location)}')" style="cursor:pointer;">
+    ?`<div class="item-card multi-reg" style="align-items:center;">
         <div style="flex:1;min-width:0;">
           <div style="font-size:11px;color:#7c3aed;font-weight:700;">拠点: ${esc(it.base)} | 保管場所: ${esc(it.location || '未設定')}</div>
           <div style="font-size:14px;font-weight:700;color:#111827;margin-top:2px;">${esc(it.part_no)}</div>
           <div style="font-size:13px;color:#4b5563;">${esc(it.name)}</div>
         </div>
-        <div style="text-align:right;flex-shrink:0;min-width:60px;">
-          <div style="font-size:18px;font-weight:700;color:${qtyColor(it.qty)};">${it.qty}</div>
-          <div style="font-size:10px;color:#9ca3af;">在庫</div>
+        <div style="text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <div>
+            <div style="font-size:18px;font-weight:700;color:${qtyColor(it.qty)};">${it.qty}</div>
+            <div style="font-size:10px;color:#9ca3af;">在庫</div>
+          </div>
+          <button onclick="quickAddToCart('${esc(it.part_no)}','${escJS(it.name)}',${it.qty},'${escJS(it.location)}')" style="background:#7c3aed;color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">+ カートに追加</button>
         </div>
       </div>`
     :`<div class="item-card multi-unreg">
