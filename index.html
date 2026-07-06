@@ -295,7 +295,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
         </div>
         <div style="background:#fff;border-radius:10px;padding:10px;margin-bottom:10px;">
           <div style="font-size:11px;color:#9ca3af;margin-bottom:2px;">読み取り品番 (修正可能)</div>
-          <!-- Ô input nhập mã quét được cho phép sửa tay -->
+          <!-- Đổi add-res-pno tĩnh thành ô input sửa tay -->
           <input id="add-res-pno" type="text" class="form-input font-bold text-lg" style="border-color:#7c3aed; text-transform:uppercase; margin-bottom:6px;"/>
           <div id="add-res-name" style="font-size:14px;color:#374151;margin-top:4px;"></div>
           <div style="font-size:12px;color:#6b7280;margin-top:4px;">現在庫: <span id="add-res-qty" style="font-weight:700;color:#059669;"></span></div>
@@ -333,124 +333,144 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 
   <!-- 部材使用 -->
   <div id="page-use" class="page hidden">
-    <div style="font-size:18px;font-weight:700;color:#111827;margin-bottom:14px;">部材使用</div>
-    
-    <!-- ★ 拠点選択を最上部へ配置 ★ -->
-    <div style="margin-bottom:16px; background:#f5f3ff; padding:12px; border-radius:12px; border:1px solid #ddd6fe;">
-      <label style="font-size:13px;color:#5b21b6;font-weight:700;display:block;margin-bottom:6px;">① まず拠点 (Base) を選択してください *</label>
-      <select id="use-base-select" class="form-input" style="font-size:15px; font-weight:700; border-color:#c4b5fd; color:#5b21b6;" onchange="onUseBaseChange()">
-        <option value="川口">川口 (Kawaguchi)</option>
-        <option value="仙台">仙台 (Sendai)</option>
-        <option value="郡山">郡山 (Koriyama)</option>
-        <option value="名古屋">名古屋 (Nagoya)</option>
-        <option value="大阪">大阪 (Osaka)</option>
-      </select>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px;">
-      <button id="use-tab-pno"   class="mode-tab active" onclick="setUseMode('pno')"   style="font-size:11px;padding:8px 4px;">品番</button>
-      <button id="use-tab-name"  class="mode-tab"        onclick="setUseMode('name')"  style="font-size:11px;padding:8px 4px;">品名</button>
-      <button id="use-tab-scan"  class="mode-tab"        onclick="setUseMode('scan')"  style="font-size:11px;padding:8px 4px;">バーコード</button>
-      <button id="use-tab-multi" class="mode-tab"        onclick="setUseMode('multi')" style="font-size:11px;padding:8px 4px;">複数</button>
-    </div>
-    
-    <!-- 品番検索 -->
-    <div id="use-pno-area">
-      <div class="search-wrap">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
-        <input id="use-pno-inp" class="search-bar" type="text" placeholder="品番を入力" oninput="debounce('pno',()=>searchUsePno())"/>
-      </div>
-      <div id="use-pno-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-    <!-- 品名検索 -->
-    <div id="use-name-area" style="display:none;">
-      <div class="search-wrap">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
-        <input id="use-name-inp" class="search-bar" type="text" placeholder="品名を入力" oninput="debounce('name',()=>searchUseName())"/>
-      </div>
-      <div id="use-name-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-    <!-- バーコード撮影 -->
-    <div id="use-scan-area" style="display:none;">
-      <div id="use-cam-wrap" class="photo-wrap" style="margin-bottom:10px;">
-        <div class="cam-box">
-          <video id="use-video" autoplay playsinline muted></video>
-          <div class="cam-guide"><div class="cam-guide-rect"></div></div>
-          <button class="shutter" onclick="captureUse()">
-            <svg fill="none" stroke="#7c3aed" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </button>
-        </div>
-        <div style="font-size:11px;color:#9ca3af;text-align:center;margin-top:5px;">バーコードを枠内に合わせてシャッターを押してください</div>
-      </div>
-      <div class="upload-zone" onclick="document.getElementById('use-file').click()">
-        <svg fill="none" stroke="#a78bfa" viewBox="0 0 24 24" style="width:28px;height:28px;margin:0 auto 5px;display:block;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-        <div style="font-size:13px;color:#7c3aed;font-weight:600;">ギャラリーから選択</div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">カメラが使えない場合はこちら</div>
-        <input id="use-file" type="file" accept="image/*" capture="environment" style="display:none;" onchange="onUseFileChange(this)"/>
-      </div>
-      <canvas id="use-canvas" class="photo-canvas"></canvas>
-      <div id="use-analyzing" style="display:none;" class="analyzing">
-        <svg class="spin" fill="none" stroke="#7c3aed" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        バーコードを解析中…
-      </div>
-      <!-- Use Scan Result Card (Có ô input sửa tay và nút tra cứu) -->
-      <div id="use-scan-result" style="display:none;" class="result-card">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <svg fill="none" stroke="#7c3aed" viewBox="0 0 24 24" style="width:17px;height:17px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <span style="font-size:12px;color:#7c3aed;font-weight:700;flex:1;">解析完了 (読み取り品番の確認)</span>
-          <button onclick="resetUseScan()" style="background:#ede9fe;color:#5b21b6;border:none;padding:4px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;">再撮影</button>
-        </div>
-        <div style="background:#fff;border-radius:10px;padding:12px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;">
-          <div>
-            <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:2px;">読み取り品番 (修正可能)</label>
-            <input id="use-res-pno-inp" type="text" class="form-input font-bold" style="font-size:16px;color:#111827;border-color:#7c3aed;text-transform:uppercase;"/>
-          </div>
-          <button onclick="queryCorrectedUsePno()" style="background:#7c3aed;color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;width:100%;">この品番で在庫を検索する</button>
-        </div>
-        <div id="use-scan-item"></div>
-      </div>
-      <div id="use-fail-card" style="display:none;" class="fail-card">
-        <div style="font-size:14px;font-weight:600;color:#ef4444;margin-bottom:6px;">読み取れませんでした</div>
-        <div style="font-size:12px;color:#6b7280;margin-bottom:10px;">明るい場所でバーコードを枠内に合わせて再撮影してください</div>
-        <button onclick="resetUseScan()" style="background:#ef4444;color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">再撮影する</button>
-      </div>
-    </div>
-    <!-- 複数品番 -->
-    <div id="use-multi-area" style="display:none;">
-      <label style="font-size:13px;color:#4b5563;display:block;margin-bottom:4px;">品番を貼り付け（1行に1品番）</label>
-      <textarea id="use-multi-inp" rows="5" class="form-input" style="resize:vertical;margin-bottom:10px;" placeholder="ABC-001&#10;XYZ-002&#10;DEF-003"></textarea>
-      <button onclick="searchMulti()" style="background:#7c3aed;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;border:none;cursor:pointer;margin-bottom:14px;">検索する</button>
-      <div id="use-multi-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-
-    <!-- カート追加用入力パネル -->
-    <div id="use-confirm" style="display:none;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-top:14px;">
-      <div style="font-size:13px;color:#7c3aed;font-weight:600;margin-bottom:4px;">カートに追加する対象</div>
-      <div id="uc-pno"  style="font-size:15px;font-weight:700;color:#111827;word-break:break-all;"></div>
-      <div id="uc-name" style="font-size:14px;color:#374151;margin-top:2px;"></div>
-      <div style="font-size:13px;color:#6b7280;margin-top:4px;">保管場所: <span id="uc-loc" style="font-weight:700;color:#111827;"></span></div>
-      <div style="font-size:13px;color:#6b7280;margin-top:2px;">拠点内在庫数: <span id="uc-stock" style="font-weight:700;color:#111827;"></span></div>
-      <div style="margin-top:12px;">
-        <label style="font-size:13px;color:#4b5563;display:block;margin-bottom:4px;">数量 *</label>
-        <input id="uc-qty" type="number" min="1" class="form-input" style="width:110px;" placeholder="0"/>
-      </div>
-      <div id="uc-err" style="display:none;color:#ef4444;font-size:12px;margin-top:6px;font-weight:600;"></div>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button onclick="addToCart()" class="btn-p" style="flex:1;">カートに追加する</button>
-        <button onclick="closeUseConfirm()" class="btn-g">キャンセル</button>
-      </div>
-    </div>
-
-    <!-- ══════ SHOPPING CART SECTION ══════ -->
-    <div id="use-cart-section" class="cart-panel" style="display:none; margin-top:20px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <span style="font-size:14px; font-weight:700; color:#15803d;">買い物かご (Cart)</span>
-        <button onclick="clearCart()" style="background:none; border:none; color:#dc2626; font-size:12px; font-weight:600; cursor:pointer;">カートを空にする</button>
-      </div>
-      <div id="use-cart-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;"></div>
-      <button id="btn-submit-cart" onclick="submitCart()" class="btn-p" style="background:#7c3aed; font-size:15px;">
-        使用を確定する (一括使用)
+    <!-- Header của trang Sử dụng tích hợp nút Giỏ hàng nổi bật -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div style="font-size:18px;font-weight:700;color:#111827;">部材使用</div>
+      <!-- Nút xem giỏ hàng kèm số lượng badge nhảy số cực kỳ trực quan -->
+      <button id="btn-toggle-cart" onclick="toggleCartView()" style="position:relative; background:#f0fdf4; border:1px solid #bbf7d0; color:#16a34a; padding:8px 14px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <span>かご</span>
+        <span id="cart-badge-count" style="background:#ef4444; color:#fff; font-size:10px; min-width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; padding:0 3px;">0</span>
       </button>
+    </div>
+    
+    <!-- Wrapper bọc toàn bộ khu vực tìm kiếm và quét camera để hỗ trợ ẩn/hiện màn hình giỏ hàng -->
+    <div id="use-search-and-scan-wrapper">
+      <!-- ★ 拠点選択を最上部へ配置 ★ -->
+      <div style="margin-bottom:16px; background:#f5f3ff; padding:12px; border-radius:12px; border:1px solid #ddd6fe;">
+        <label style="font-size:13px;color:#5b21b6;font-weight:700;display:block;margin-bottom:6px;">① まず拠点 (Base) を選択してください *</label>
+        <select id="use-base-select" class="form-input" style="font-size:15px; font-weight:700; border-color:#c4b5fd; color:#5b21b6;" onchange="onUseBaseChange()">
+          <option value="川口">川口 (Kawaguchi)</option>
+          <option value="仙台">仙台 (Sendai)</option>
+          <option value="郡山">郡山 (Koriyama)</option>
+          <option value="名古屋">名古屋 (Nagoya)</option>
+          <option value="大阪">大阪 (Osaka)</option>
+        </select>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px;">
+        <button id="use-tab-pno"   class="mode-tab active" onclick="setUseMode('pno')"   style="font-size:11px;padding:8px 4px;">品番</button>
+        <button id="use-tab-name"  class="mode-tab"        onclick="setUseMode('name')"  style="font-size:11px;padding:8px 4px;">品名</button>
+        <button id="use-tab-scan"  class="mode-tab"        onclick="setUseMode('scan')"  style="font-size:11px;padding:8px 4px;">バーコード</button>
+        <button id="use-tab-multi" class="mode-tab"        onclick="setUseMode('multi')" style="font-size:11px;padding:8px 4px;">複数</button>
+      </div>
+      
+      <!-- 品番検索 -->
+      <div id="use-pno-area">
+        <div class="search-wrap">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+          <input id="use-pno-inp" class="search-bar" type="text" placeholder="品番を入力" oninput="debounce('pno',()=>searchUsePno())"/>
+        </div>
+        <div id="use-pno-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+      <!-- 品名検索 -->
+      <div id="use-name-area" style="display:none;">
+        <div class="search-wrap">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+          <input id="use-name-inp" class="search-bar" type="text" placeholder="品名を入力" oninput="debounce('name',()=>searchUseName())"/>
+        </div>
+        <div id="use-name-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+      <!-- バーコード撮影 -->
+      <div id="use-scan-area" style="display:none;">
+        <div id="use-cam-wrap" class="photo-wrap" style="margin-bottom:10px;">
+          <div class="cam-box">
+            <video id="use-video" autoplay playsinline muted></video>
+            <div class="cam-guide"><div class="cam-guide-rect"></div></div>
+            <button class="shutter" onclick="captureUse()">
+              <svg fill="none" stroke="#7c3aed" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812-1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
+          </div>
+          <div style="font-size:11px;color:#9ca3af;text-align:center;margin-top:5px;">バーコードを枠内に合わせてシャッターを押してください</div>
+        </div>
+        <div class="upload-zone" onclick="document.getElementById('use-file').click()">
+          <svg fill="none" stroke="#a78bfa" viewBox="0 0 24 24" style="width:28px;height:28px;margin:0 auto 5px;display:block;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <div style="font-size:13px;color:#7c3aed;font-weight:600;">ギャラリーから選択</div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">カメラが使えない場合はこちら</div>
+          <input id="use-file" type="file" accept="image/*" capture="environment" style="display:none;" onchange="onUseFileChange(this)"/>
+        </div>
+        <canvas id="use-canvas" class="photo-canvas"></canvas>
+        <div id="use-analyzing" style="display:none;" class="analyzing">
+          <svg class="spin" fill="none" stroke="#7c3aed" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          バーコードを解析中…
+        </div>
+        <!-- Use Scan Result Card (Có ô input sửa tay và nút tra cứu) -->
+        <div id="use-scan-result" style="display:none;" class="result-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <svg fill="none" stroke="#7c3aed" viewBox="0 0 24 24" style="width:17px;height:17px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span style="font-size:12px;color:#7c3aed;font-weight:700;flex:1;">解析完了 (読み取り品番の確認)</span>
+            <button onclick="resetUseScan()" style="background:#ede9fe;color:#5b21b6;border:none;padding:4px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;">再撮影</button>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:12px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;">
+            <div>
+              <label style="font-size:11px;color:#9ca3af;display:block;margin-bottom:2px;">読み取り品番 (修正可能)</label>
+              <input id="use-res-pno-inp" type="text" class="form-input font-bold" style="font-size:16px;color:#111827;border-color:#7c3aed;text-transform:uppercase;"/>
+            </div>
+            <button onclick="queryCorrectedUsePno()" style="background:#7c3aed;color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;width:100%;">この品番で在庫を検索する</button>
+          </div>
+          <div id="use-scan-item"></div>
+        </div>
+        <div id="use-fail-card" style="display:none;" class="fail-card">
+          <div style="font-size:14px;font-weight:600;color:#ef4444;margin-bottom:6px;">読み取れませんでした</div>
+          <div style="font-size:12px;color:#6b7280;margin-bottom:10px;">明るい場所でバーコードを枠内に合わせて再撮影してください</div>
+          <button onclick="resetUseScan()" style="background:#ef4444;color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">再撮影する</button>
+        </div>
+      </div>
+      <!-- 複数品番 -->
+      <div id="use-multi-area" style="display:none;">
+        <label style="font-size:13px;color:#4b5563;display:block;margin-bottom:4px;">品番を貼り付け（1行に1品番）</label>
+        <textarea id="use-multi-inp" rows="5" class="form-input" style="resize:vertical;margin-bottom:10px;" placeholder="ABC-001&#10;XYZ-002&#10;DEF-003"></textarea>
+        <button onclick="searchMulti()" style="background:#7c3aed;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;border:none;cursor:pointer;margin-bottom:14px;">検索する</button>
+        <div id="use-multi-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- カート追加用入力パネル -->
+      <div id="use-confirm" style="display:none;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-top:14px;">
+        <div style="font-size:13px;color:#7c3aed;font-weight:600;margin-bottom:4px;">カートに追加する対象</div>
+        <div id="uc-pno"  style="font-size:15px;font-weight:700;color:#111827;word-break:break-all;"></div>
+        <div id="uc-name" style="font-size:14px;color:#374151;margin-top:2px;"></div>
+        <div style="font-size:13px;color:#6b7280;margin-top:4px;">保管場所: <span id="uc-loc" style="font-weight:700;color:#111827;"></span></div>
+        <div style="font-size:13px;color:#6b7280;margin-top:2px;">拠点内在庫数: <span id="uc-stock" style="font-weight:700;color:#111827;"></span></div>
+        <div style="margin-top:12px;">
+          <label style="font-size:13px;color:#4b5563;display:block;margin-bottom:4px;">数量 *</label>
+          <input id="uc-qty" type="number" min="1" class="form-input" style="width:110px;" placeholder="0"/>
+        </div>
+        <div id="uc-err" style="display:none;color:#ef4444;font-size:12px;margin-top:6px;font-weight:600;"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button onclick="addToCart()" class="btn-p" style="flex:1;">カートに追加する</button>
+          <button onclick="closeUseConfirm()" class="btn-g">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ MÀN HÌNH GIỎ HÀNG RIÊNG BIỆT (CART VIEW - slide-over drawer style) ══════ -->
+    <div id="use-cart-section" class="cart-panel" style="display:none; margin-top:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #bbf7d0; padding-bottom:8px;">
+        <span style="font-size:16px; font-weight:700; color:#15803d; display:flex; align-items:center; gap:6px;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          選択した部材一覧 (Cart)
+        </span>
+        <button onclick="clearCart()" style="background:none; border:none; color:#dc2626; font-size:13px; font-weight:700; cursor:pointer;">クリア (Clear)</button>
+      </div>
+      <div id="use-cart-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px; max-height: 320px; overflow-y: auto; padding-right: 4px;"></div>
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button id="btn-submit-cart" onclick="submitCart()" class="btn-p" style="background:#16a34a; font-size:15px; flex:1;">
+          使用を確定する (一括使用)
+        </button>
+        <button onclick="closeCartView()" class="btn-g" style="padding:12px 18px;">
+          閉じる
+        </button>
+      </div>
     </div>
 
     <!-- ══════ SUCCESS SECTION ══════ -->
@@ -624,7 +644,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 <div id="more-drawer">
   <div style="font-size:11px;font-weight:600;color:#9ca3af;padding:10px 20px 4px;">簿外管理 (Off-book)</div>
   <div class="drawer-item" onclick="go('bogai-add');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>簿外追加</div>
-  <div class="drawer-item" onclick="go('bogai-use');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>簿外使用</div>
+  <div class="drawer-item" onclick="goBogai('use');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>簿外使用</div>
   <div class="drawer-item" onclick="goBogai('stock');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>簿外確認</div>
   <div style="height:1px;background:#f3f4f6;margin:4px 20px;"></div>
   <div class="drawer-item" onclick="go('history');closeDrawer()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>履歴確認</div>
@@ -1123,7 +1143,7 @@ async function searchAddPno(){
     hide('add-new-name-wrap'); 
     _manualData={part_no:r.part_no,name:r.name,qty:r.qty,base:base,location:r.location,is_new:false};
   }else{
-    $('add-info-label').textContent='新規またはこの拠点で未登録ের品番 — 新規追加されます'; 
+    $('add-info-label').textContent='新規またはこの拠点で未登録の品番 — 新規追加されます'; 
     $('add-info-name').textContent='（拠点内未登録）'; 
     $('add-info-qty').textContent='0';
     $('add-info-loc').textContent='未設定';
@@ -1323,7 +1343,7 @@ function renderUseList(cid, items){
       <div style="flex:1;min-width:0;">
         <div style="font-size:11px;color:#7c3aed;font-weight:700;">拠点: ${esc(it.base)} | 保管場所: ${esc(it.location || '未設定')}</div>
         <div style="font-size:14px;font-weight:700;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;">${esc(it.part_no)}</div>
-        <div style="font-size:13px;color:#4b5563;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(it.name)}</div>
+        <div style="font-size:13px;color:#4b5563;">${esc(it.name)}</div>
       </div>
       <div style="text-align:right;flex-shrink:0;min-width:60px;">
         <div style="font-size:20px;font-weight:700;color:${qtyColor(it.qty)};">${it.qty}</div>
@@ -1616,11 +1636,11 @@ async function searchMulti(){
   const base=$('use-base-select').value;
   if(!pnos.length){ toast('品番を入力してください',true); return; }
   if(cacheIsValid()){
-    const results=pnos.map(pn=>{ 
+    const Math_results=pnos.map(pn=>{ 
       const it=cacheGet(pn, base); 
       return it?{...it,found:true}:{part_no:pn,found:false,base:base,location:''}; 
     });
-    renderMultiResults(results); 
+    renderMultiResults(Math_results); 
     return;
   }
   if(!API){ $('use-multi-list').innerHTML=emptyMsg('APIが設定されていません'); return; }
@@ -1637,7 +1657,7 @@ function renderMultiResults(res){
         <div style="flex:1;min-width:0;">
           <div style="font-size:11px;color:#7c3aed;font-weight:700;">拠点: ${esc(it.base)} | 保管場所: ${esc(it.location || '未設定')}</div>
           <div style="font-size:14px;font-weight:700;color:#111827;margin-top:2px;">${esc(it.part_no)}</div>
-          <div style="font-size:13px;color:#4b5563;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(it.name)}</div>
+          <div style="font-size:13px;color:#4b5563;">${esc(it.name)}</div>
         </div>
         <div style="text-align:right;flex-shrink:0;min-width:60px;">
           <div style="font-size:18px;font-weight:700;color:${qtyColor(it.qty)};">${it.qty}</div>
@@ -1781,7 +1801,7 @@ async function submitBogaiUse(id, name, stock){
 }
 
 // 6 Buttons Navigation Logic (On-book / Off-book)
-let bogaiMode = 'use'; // 'use' or 'stock'
+let bogaiMode = 'use'; // 'use' or 'stock' (Khai báo duy nhất ở đây)
 function goBogai(mode) {
   bogaiMode = mode;
   const el = $('bogai-page-title');
@@ -2000,7 +2020,7 @@ function renderAdminBogai(items){
         </div>
         <div style="text-align:right;display:flex;align-items:center;gap:12px;">
           <div style="font-size:16px;font-weight:700;color:${qtyColor(it.qty)}; margin-right:8px;">${it.qty}</div>
-          <button onclick="editBogaiFields('${safeItemName}','${safeCategory}','${safeCondition}',${it.qty},'safeLocation','${safeRemarks}')" style="background:#ede9fe;color:#5b21b6;border:none;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">編集</button>
+          <button onclick="editBogaiFields('${safeItemName}','${safeCategory}','${safeCondition}',${it.qty},'${safeLocation}','${safeRemarks}')" style="background:#ede9fe;color:#5b21b6;border:none;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">編集</button>
           <button onclick="deleteBogaiPart('${safeItemName}')" style="background:#fee2e2;color:#ef4444;border:none;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">削除</button>
         </div>
       </div>
