@@ -1800,17 +1800,6 @@ async function submitBogaiUse(id, name, stock){
   }
 }
 
-// 6 Buttons Navigation Logic (On-book / Off-book)
-let bogaiMode = 'use'; // 'use' or 'stock' (Khai báo duy nhất ở đây)
-function goBogai(mode) {
-  bogaiMode = mode;
-  const el = $('bogai-page-title');
-  if (el) {
-    el.textContent = mode === 'use' ? '簿外使用 (Off-book Use)' : '簿外在庫確認 (Off-book Stock)';
-  }
-  go('bogai-use');
-}
-
 // ════════════════════════════════════════════════
 // 在庫確認
 // ════════════════════════════════════════════════
