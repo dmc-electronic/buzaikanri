@@ -1,3 +1,9 @@
+"""
+部材・補材管理システム — FastAPI バックエンド
+Google Sheets をリアルタイムDBとして使用
+Render Web Service にデプロイする構成
+"""
+
 from __future__ import annotations
 
 import csv
@@ -8,6 +14,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
+import requests
 import gspread
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,10 +29,11 @@ from pydantic import BaseModel
 # 環境変数
 # ══════════════════════════════════════════════════
 GOOGLE_SHEET_ID  = os.environ["GOOGLE_SHEET_ID"]
-GOOGLE_WORKSHEET = os.getenv("GOOGLE_WORKSHEET", "在庫")
+GOOGLE_WORKSHEET = os.getenv("GOOGLE_WORKSHEET", "stock")
 SECRET_KEY       = os.environ["SECRET_KEY"]
 ALGORITHM        = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
+GOOGLE_VISION_API_KEY = os.environ["GOOGLE_VISION_API_KEY"]
 
 CREDENTIALS_JSON = os.getenv("GOOGLE_CREDENTIALS_JSON")
 
@@ -57,7 +65,7 @@ def open_sheet(sheet_name: str) -> gspread.Worksheet:
 # ──────────────────────────────────────────────────
 # シート名定数
 # ──────────────────────────────────────────────────
-WS_STOCK   = os.getenv("GOOGLE_WORKSHEET", "在庫")
+WS_STOCK   = os.getenv("GOOGLE_WORKSHEET", "stock")
 WS_HISTORY = "history"
 WS_USERS   = "ユーザー"
 WS_BOGAI   = "簿外"
@@ -120,7 +128,7 @@ def append_history(user: str, part_no: str, name: str, qty: int, action: str) ->
     ws.append_row([jst_now(), user, part_no, name, str(qty), action])
 
 # ══════════════════════════════════════════════════
-# 在庫 (STOCK) CRUD
+# 在庫 (STOCK) CRUD ヘルパー
 # ══════════════════════════════════════════════════
 def find_stock_row(ws: gspread.Worksheet, part_no: str, base: str) -> Optional[int]:
     rows = ws.get_all_values()
@@ -225,7 +233,7 @@ def get_all_history() -> List[Dict[str, Any]]:
 
 
 # ══════════════════════════════════════════════════
-# 簿外 (BOGAI) CRUD
+# 簿外 (BOGAI) CRUD ヘルパー 
 # ══════════════════════════════════════════════════
 def find_bogai_row(ws: gspread.Worksheet, item_name: str) -> Optional[int]:
     col_a = ws.col_values(1)
@@ -529,3 +537,95 @@ def admin_delete_user(username: str, _=Depends(get_admin_user)):
 def health(): return {"status": "ok", "time": jst_now()}
 @app.get("/")
 def root(): return {"message": "API", "docs": "/docs"}
+
+# ── OCR API (Google Vision) ──
+class OcrRequest(BaseModel):
+    image: str  # base64 JPEG
+
+@app.post("/ocr/label")
+def ocr_label(body: OcrRequest):
+    """Google Vision APIでラベル画像から品番・品名を抽出する"""
+    try:
+        # Google Vision API呼び出し
+        url = f"https://vision.googleapis.com/v1/images:annotate?key={GOOGLE_VISION_API_KEY}"
+        payload = {
+            "requests": [{
+                "image": {"content": body.image},
+                "features": [{"type": "TEXT_DETECTION", "maxResults": 1}]
+            }]
+        }
+        resp = requests.post(url, json=payload, timeout=10)
+        
+        # Google Vision APIからのエラー（403 Forbidden等）を具体的にキャッチする
+        if resp.status_code == 403:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="Google Cloud Vision APIが有効化されていないか、APIキーの権限が制限されています。GCP Consoleを確認してください。"
+            )
+            
+        resp.raise_for_status()
+        data = resp.json()
+
+        # テキスト全体を取得
+        annotations = data.get("responses", [{}])[0].get("textAnnotations", [])
+        if not annotations:
+            raise HTTPException(status_code=422, detail="画像からテキストが検出されませんでした")
+
+        full_text = annotations[0].get("description", "")
+        lines = [l.strip() for l in full_text.splitlines() if l.strip()]
+        print(f"[Vision OCR] 読み取り結果:\n{full_text}")
+
+        # 品番を抽出: 「品番」の次の行、またはN/M/K始まりのパターン
+        part_no = None
+        name = None
+        part_name_eng = None
+
+        for i, line in enumerate(lines):
+            # 「品番」ラベルの次の行を品番として取得
+            if re.search(r'品番|PART\s*No', line, re.IGNORECASE):
+                # Aynı satırda parça numarası varsa
+                inline = re.search(r'([NMKnmk][A-Z0-9]{3,})', line, re.IGNORECASE)
+                if inline:
+                    part_no = inline.group(1).upper()
+                # Alt satırda parça numarası varsa
+                elif i + 1 < len(lines):
+                    next_line = lines[i + 1]
+                    m = re.search(r'([NMKnmk][A-Z0-9]{3,})', next_line, re.IGNORECASE)
+                    if m:
+                        part_no = m.group(1).upper()
+
+            # 「品名」ラベルの次の行を品名として取得 (Tiếng Nhật)
+            if re.search(r'品名', line):
+                inline_name = re.sub(r'品名', '', line).replace(':', '').replace('：', '').strip()
+                if inline_name:
+                    name = inline_name
+                elif i + 1 < len(lines):
+                    name = lines[i + 1].strip()
+
+            # Tìm nhãn "PART NAME" (Tiếng Anh)
+            if re.search(r'PART\s*NAME', line, re.IGNORECASE):
+                inline_eng = re.sub(r'PART\s*NAME', '', line, flags=re.IGNORECASE).replace(':', '').replace('：', '').strip()
+                if inline_eng:
+                    part_name_eng = inline_eng
+                elif i + 1 < len(lines):
+                    part_name_eng = lines[i + 1].strip()
+
+        # Nếu không tìm thấy nhãn "品番", thực hiện tìm kiếm tự do
+        if not part_no:
+            for line in lines:
+                m = re.search(r'\b([NMKnmk][A-Z0-9]{5,})\b', line, re.IGNORECASE)
+                if m:
+                    part_no = m.group(1).upper()
+                    break
+
+        if not part_no:
+            raise HTTPException(status_code=422, detail="品番が読み取れませんでした")
+
+        return {"part_no": part_no, "name": name or "", "part_name_eng": part_name_eng or ""}
+
+    except HTTPException:
+        raise
+    except requests.exceptions.HTTPError as e:
+        raise HTTPException(status_code=400, detail=f"Google API Error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"OCRエラー: {str(e)}")
