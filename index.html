@@ -1459,6 +1459,27 @@ function addToCart() {
   updateCartUI();
 }
 
+// ── Mở/đóng màn hình Giỏ hàng riêng biệt ──
+function toggleCartView() {
+  const cartSection = $('use-cart-section');
+  const searchWrapper = $('use-search-and-scan-wrapper');
+  const isOpen = cartSection.style.display !== 'none';
+
+  if (isOpen) {
+    hide('use-cart-section');
+    show('use-search-and-scan-wrapper');
+  } else {
+    show('use-cart-section');
+    hide('use-search-and-scan-wrapper');
+    cartSection.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function closeCartView() {
+  hide('use-cart-section');
+  show('use-search-and-scan-wrapper');
+}
+
 function updateCartUI() {
   const section = $('use-cart-section');
   const list = $('use-cart-list');
