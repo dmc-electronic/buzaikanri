@@ -129,13 +129,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div class="sl" id="sl-add"     onclick="go('add')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>簿外追加</div>
     <div class="sl" id="sl-use"     onclick="go('use')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>簿外使用</div>
     <div class="sl" id="sl-stock"   onclick="go('stock')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>簿外確認</div>
-    <div class="sl" id="sl-history" onclick="go('history')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>履歴確認</div>
     
     <div style="font-size:11px;font-weight:600;color:#9ca3af;padding:4px 8px;margin:8px 0 2px;">中古管理 (Off-book)</div>
     <div class="sl" id="sl-bogai-add" onclick="go('bogai-add')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>中古追加</div>
     <div class="sl" id="sl-bogai-use" onclick="goBogai('use')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>中古使用</div>
+    <div class="sl" id="sl-bogai-stock" onclick="goBogai('stock')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>中古確認</div>
+
+    <div style="font-size:11px;font-weight:600;color:#9ca3af;padding:4px 8px;margin:8px 0 2px;">在庫管理</div>
+    <div class="sl" id="sl-zaiko-add" onclick="go('zaiko-add')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>在庫追加</div>
+    <div class="sl" id="sl-zaiko-use" onclick="goZaiko('use')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>在庫使用</div>
+    <div class="sl" id="sl-zaiko-stock" onclick="goZaiko('stock')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>在庫確認</div>
 
     <div style="font-size:11px;font-weight:600;color:#9ca3af;padding:4px 8px;margin:8px 0 2px;">ADMIN</div>
+    <div class="sl" id="sl-history" onclick="go('history')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>履歴確認</div>
     <div class="sl" id="sl-admin"   onclick="go('admin')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>管理（Admin）</div>
   </nav>
   <div style="padding:12px 16px;border-top:1px solid #f3f4f6;display:flex;align-items:center;gap:8px;">
@@ -524,6 +530,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div id="bu-list" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
 
+  <!-- ══════ ZAIKO ADD ══════ -->
+  <div id="page-zaiko-add" class="page hidden">
+    <div style="font-size:18px;font-weight:700;color:#111827;margin-bottom:14px;">在庫追加</div>
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:13px;color:#4b5563;font-weight:600;display:block;margin-bottom:4px;">品番 (Part No) *</label>
+        <input id="za-partno" type="text" class="form-input" placeholder="例: N510026293AA"/>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:13px;color:#4b5563;font-weight:600;display:block;margin-bottom:4px;">品名 (Item Name) *</label>
+        <input id="za-name" type="text" class="form-input" placeholder="例: Cable"/>
+      </div>
+      <div style="margin-bottom:12px;display:flex;gap:10px;">
+        <div style="flex:1;">
+          <label style="font-size:13px;color:#4b5563;font-weight:600;display:block;margin-bottom:4px;">数量 (Quantity) *</label>
+          <input id="za-qty" type="number" min="1" class="form-input" placeholder="0"/>
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:13px;color:#4b5563;font-weight:600;display:block;margin-bottom:4px;">拠点 (Base)</label>
+          <input id="za-base" type="text" class="form-input" placeholder="例: 川口"/>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:13px;color:#4b5563;font-weight:600;display:block;margin-bottom:4px;">保管場所 (Location)</label>
+        <input id="za-location" type="text" class="form-input" placeholder="例: 別館2階..."/>
+      </div>
+      <button onclick="submitZaikoAdd()" class="btn-p">在庫リストに追加</button>
+    </div>
+  </div>
+
+  <!-- ══════ ZAIKO USE / STOCK ══════ -->
+  <div id="page-zaiko-use" class="page hidden">
+    <div id="zaiko-page-title" style="font-size:18px;font-weight:700;color:#111827;margin-bottom:14px;">在庫使用</div>
+    <div class="search-wrap">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+      <input id="zu-search-inp" class="search-bar" type="text" placeholder="管理番号、品番、品名、拠点、保管場所で検索" oninput="debounce('zaiko',()=>searchZaikoUse())"/>
+    </div>
+    <div id="zu-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+
   <!-- 簿外確認 -->
   <div id="page-stock" class="page hidden">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -763,12 +809,20 @@ let _cache = { data:[], ts:0, map:{} };
 let _allHistory = [], _stockFiltered = [], _stockRenderOffset = 0, _allAdminStock = [], _allAdminBogai = [], activeBogaiInline = null;
 let cartItems = [], lastUsedItems = [];
 let bogaiMode = 'use';
+let zaikoMode = 'use';
 
 function goBogai(mode) {
   bogaiMode = mode;
   const el = $('bogai-page-title');
   if (el) el.textContent = mode === 'use' ? '中古使用 (Off-book Use)' : '中古在庫確認 (Off-book Stock)';
   go('bogai-use');
+}
+
+function goZaiko(mode) {
+  zaikoMode = mode;
+  const el = $('zaiko-page-title');
+  if (el) el.textContent = mode === 'use' ? '在庫使用' : '在庫確認';
+  go('zaiko-use');
 }
 
 const _dbt = {};
@@ -868,6 +922,8 @@ function go(page){
     if(page==='admin')   initAdmin();
     if(page==='bogai-add') initBogaiAdd();
     if(page==='bogai-use') initBogaiUse();
+    if(page==='zaiko-add') initZaikoAdd();
+    if(page==='zaiko-use') initZaikoUse();
   }catch(e){ console.error('page init error:',e); }
 }
 
@@ -1449,6 +1505,105 @@ async function submitBogaiUse(id, name, stock){
   try{
     await apiFetch('/bogai/use',{method:'POST',body:JSON.stringify({item_name: name, qty, user: currentUser})});
     toast(`✓ 中古 ${name} を ${qty} 使用しました`); searchBogaiUse(); 
+  }catch(e){ toast(e.message, true); qtyInp.disabled = false; }
+}
+
+// ══════ ZAIKO (在庫管理) — mirrors Bogai (中古管理) logic, backed by "在庫" sheet ══════
+function initZaikoAdd(){
+  $('za-partno').value = ''; $('za-name').value = ''; $('za-qty').value = ''; $('za-base').value = ''; $('za-location').value = '';
+}
+
+async function submitZaikoAdd(){
+  const part_no = $('za-partno').value.trim(), name = $('za-name').value.trim(), qty = parseInt($('za-qty').value), base = $('za-base').value.trim(), location = $('za-location').value.trim();
+  if(!part_no) { toast('品番を入力してください', true); return; }
+  if(!name) { toast('品名を入力してください', true); return; }
+  if(isNaN(qty) || qty < 1) { toast('数量を正しく入力してください', true); return; }
+  try{
+    await apiFetch('/zaiko/add', { method:'POST', body:JSON.stringify({ part_no, name, qty, base, location, user: currentUser }) });
+    toast(`✓ 在庫アイテムを追加しました`); initZaikoAdd();
+  } catch(e) { toast(e.message, true); }
+}
+
+function initZaikoUse(){ $('zu-search-inp').value = ''; $('zu-list').innerHTML = emptyMsg('管理番号、品番、品名、拠点、保管場所で検索してください'); }
+
+async function searchZaikoUse(){
+  const q = $('zu-search-inp').value.trim(); if(!q) { $('zu-list').innerHTML = emptyMsg('検索ワードを入力してください'); return; }
+  try {
+    const res = await apiFetch(`/zaiko/search?query=${encodeURIComponent(q)}`); renderZaikoList(res || []);
+  } catch(e) { $('zu-list').innerHTML = errMsg(e.message); }
+}
+
+function renderZaikoList(items){
+  if(!items?.length){ $('zu-list').innerHTML = emptyMsg('該当なし'); return; }
+
+  // 在庫確認 (stock check only) — read-only, no click, no usage input
+  if (zaikoMode === 'stock') {
+    $('zu-list').innerHTML = items.map(it => `
+      <div class="item-card">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;color:#6b7280;">${esc(it.part_no)} | 拠点: ${esc(it.base)}</div>
+          <div style="font-size:14px;font-weight:600;color:#111827;">${esc(it.name)}</div>
+          <div style="font-size:10px;color:#9ca3af;margin-top:2px;">保管場所: ${esc(it.location)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:20px;font-weight:700;color:${qtyColor(it.qty)};">${it.qty}</div>
+          <div style="font-size:10px;color:#9ca3af;">在庫</div>
+        </div>
+      </div>`).join('');
+    return;
+  }
+
+  // 在庫使用 — click to expand and enter usage qty
+  $('zu-list').innerHTML = items.map(it => {
+    const safeId = (it.management_no || it.part_no).replace(/[^a-zA-Z0-9]/g,'_'), safeIdJS = escJS(it.management_no || it.part_no);
+    return `
+    <div>
+      <div class="item-card" id="zcard-${safeId}" onclick="toggleZaikoInline('${safeId}', '${safeIdJS}', ${it.qty})" style="cursor:pointer; z-index:2; position:relative;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;color:#6b7280;">${esc(it.part_no)} | 拠点: ${esc(it.base)}</div>
+          <div style="font-size:14px;font-weight:600;color:#111827;">${esc(it.name)}</div>
+          <div style="font-size:10px;color:#9ca3af;margin-top:2px;">保管場所: ${esc(it.location)}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:20px;font-weight:700;color:${qtyColor(it.qty)};">${it.qty}</div>
+          <div style="font-size:10px;color:#9ca3af;">在庫</div>
+        </div>
+      </div>
+      <div class="inline-panel" id="zinline-${safeId}" style="display:none; padding: 10px; background: #faf5ff; border: 1px solid #e5e7eb; border-top:none; border-radius:0 0 10px 10px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div style="flex:1;">
+            <label style="font-size:11px;color:#6b7280;display:block;margin-bottom:4px;">使用数量を入力</label>
+            <input id="zinline-qty-${safeId}" type="number" min="1" class="form-input" style="padding:8px 12px;font-size:15px;background:#fff;" placeholder="0"/>
+          </div>
+          <button onclick="submitZaikoUse('${safeId}', '${safeIdJS}', ${it.qty})" style="background:#059669;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;margin-top:16px;">在庫使用</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let activeZaikoInline = null;
+function toggleZaikoInline(id, managementNo, stock) {
+  if (activeZaikoInline && activeZaikoInline !== id) {
+    const oldPanel = $('zinline-' + activeZaikoInline); if(oldPanel) oldPanel.style.display = 'none';
+    const oldCard = $('zcard-' + activeZaikoInline); if(oldCard) oldCard.classList.remove('has-inline');
+  }
+  const panel = $('zinline-' + id), card = $('zcard-' + id);
+  if (panel.style.display === 'none' || panel.style.display === '') {
+    panel.style.display = 'block'; card.classList.add('has-inline'); activeZaikoInline = id;
+    setTimeout(() => { const inp = $('zinline-qty-'+id); if(inp) inp.focus(); }, 100);
+  } else { panel.style.display = 'none'; card.classList.remove('has-inline'); activeZaikoInline = null; }
+}
+
+async function submitZaikoUse(id, managementNo, stock){
+  const qtyInp = $('zinline-qty-'+id); if(!qtyInp) return;
+  const qty = parseInt(qtyInp.value);
+  if(isNaN(qty)||qty<1){ toast('数量を入力してください', true); return; }
+  if(qty>stock){ toast(`在庫数 (${stock}) を超えています`, true); return; }
+  qtyInp.disabled = true;
+  try{
+    await apiFetch('/zaiko/use',{method:'POST',body:JSON.stringify({ management_no: managementNo, qty, user: currentUser })});
+    toast(`✓ 在庫を ${qty} 使用しました`); searchZaikoUse();
   }catch(e){ toast(e.message, true); qtyInp.disabled = false; }
 }
 
