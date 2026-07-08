@@ -169,9 +169,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <div class="dash-card"><div id="stat-zero"  class="dash-num" style="color:#ef4444;">—</div><div class="dash-lbl">ゼロ</div></div>
       <div class="dash-card"><div id="stat-today" class="dash-num" style="color:#7c3aed;">—</div><div class="dash-lbl">今日操作</div></div>
     </div>
-    <!-- Top3 critical -->
-    <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:8px;">⚠️ 要補充 TOP3</div>
-    <div id="home-top3"></div>
     
     <!-- 6 Grid Quick actions -->
     <div style="margin-top:18px;">
@@ -986,16 +983,6 @@ function initHome(){
   setText('stat-zero',  data.filter(it=>it.qty<=0).length||'—');
   setText('stat-today', '…');
   if(_cache.ts){ setText('home-updated','キャッシュ: '+new Date(_cache.ts).toLocaleTimeString('ja-JP')); }
-  const critical = [...data].filter(it=>it.qty<=5).sort((a,b)=>a.qty-b.qty).slice(0,3);
-  $('home-top3').innerHTML = critical.length
-    ? critical.map(it=>`<div class="top3-item">
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:11px;color:#6b7280;">${esc(it.part_no)} [拠点: ${esc(it.base)}] [保管: ${esc(it.location || '未登録')}]</div>
-          <div style="font-size:14px;font-weight:600;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(it.name)}</div>
-        </div>
-        <div style="font-size:22px;font-weight:800;color:${qtyColor(it.qty)};">${it.qty}</div>
-      </div>`).join('')
-    : emptyMsg('在庫少のアイテムはありません ✓');
   if(API){ apiFetch('/stats').then(s=>{ setText('stat-total', s.total); setText('stat-low', s.low_stock); setText('stat-zero', s.zero_stock); setText('stat-today', s.today_ops??'—'); }).catch(()=>{}); }
 }
 
