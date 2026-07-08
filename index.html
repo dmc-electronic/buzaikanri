@@ -529,6 +529,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
     <div style="font-size:18px;font-weight:700;color:#111827;margin-bottom:14px;">在庫追加</div>
     <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;">
       <div style="margin-bottom:12px;">
+        <label style="font-size:13px;color:#4b5563;font-weight:600;display:block;margin-bottom:4px;">管理番号 (Management No) *</label>
+        <input id="za-managementno" type="text" class="form-input" placeholder="例: Z0001"/>
+      </div>
+      <div style="margin-bottom:12px;">
         <label style="font-size:13px;color:#4b5563;font-weight:600;display:block;margin-bottom:4px;">品番 (Part No) *</label>
         <input id="za-partno" type="text" class="form-input" placeholder="例: N510026293AA"/>
       </div>
@@ -1494,16 +1498,17 @@ async function submitBogaiUse(id, name, stock){
 
 // ══════ ZAIKO (在庫管理) — mirrors Bogai (中古管理) logic, backed by "在庫" sheet ══════
 function initZaikoAdd(){
-  $('za-partno').value = ''; $('za-name').value = ''; $('za-qty').value = ''; $('za-base').value = ''; $('za-location').value = '';
+  $('za-managementno').value = ''; $('za-partno').value = ''; $('za-name').value = ''; $('za-qty').value = ''; $('za-base').value = ''; $('za-location').value = '';
 }
 
 async function submitZaikoAdd(){
-  const part_no = $('za-partno').value.trim(), name = $('za-name').value.trim(), qty = parseInt($('za-qty').value), base = $('za-base').value.trim(), location = $('za-location').value.trim();
+  const management_no = $('za-managementno').value.trim(), part_no = $('za-partno').value.trim(), name = $('za-name').value.trim(), qty = parseInt($('za-qty').value), base = $('za-base').value.trim(), location = $('za-location').value.trim();
+  if(!management_no) { toast('管理番号を入力してください', true); return; }
   if(!part_no) { toast('品番を入力してください', true); return; }
   if(!name) { toast('品名を入力してください', true); return; }
   if(isNaN(qty) || qty < 1) { toast('数量を正しく入力してください', true); return; }
   try{
-    await apiFetch('/zaiko/add', { method:'POST', body:JSON.stringify({ part_no, name, qty, base, location, user: currentUser }) });
+    await apiFetch('/zaiko/add', { method:'POST', body:JSON.stringify({ management_no, part_no, name, qty, base, location, user: currentUser }) });
     toast(`✓ 在庫アイテムを追加しました`); initZaikoAdd();
   } catch(e) { toast(e.message, true); }
 }
@@ -1525,6 +1530,7 @@ function renderZaikoList(items){
     $('zu-list').innerHTML = items.map(it => `
       <div class="item-card">
         <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:700;color:#0d9488;">管理番号: ${esc(it.management_no)}</div>
           <div style="font-size:11px;color:#6b7280;">${esc(it.part_no)} | 拠点: ${esc(it.base)}</div>
           <div style="font-size:14px;font-weight:600;color:#111827;">${esc(it.name)}</div>
           <div style="font-size:10px;color:#9ca3af;margin-top:2px;">保管場所: ${esc(it.location)}</div>
@@ -1544,6 +1550,7 @@ function renderZaikoList(items){
     <div>
       <div class="item-card" id="zcard-${safeId}" onclick="toggleZaikoInline('${safeId}', '${safeIdJS}', ${it.qty})" style="cursor:pointer; z-index:2; position:relative;">
         <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:700;color:#0d9488;">管理番号: ${esc(it.management_no)}</div>
           <div style="font-size:11px;color:#6b7280;">${esc(it.part_no)} | 拠点: ${esc(it.base)}</div>
           <div style="font-size:14px;font-weight:600;color:#111827;">${esc(it.name)}</div>
           <div style="font-size:10px;color:#9ca3af;margin-top:2px;">保管場所: ${esc(it.location)}</div>

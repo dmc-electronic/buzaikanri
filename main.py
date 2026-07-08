@@ -343,10 +343,14 @@ def get_all_zaiko() -> List[Dict[str, Any]]:
         })
     return result
 
-def add_zaiko(part_no: str, name: str, qty: int, base: str, location: str, user: str) -> Dict[str, Any]:
+def add_zaiko(management_no: str, part_no: str, name: str, qty: int, base: str, location: str, user: str) -> Dict[str, Any]:
     ws = open_sheet(WS_ZAIKO)
     now = jst_now()
-    management_no = generate_zaiko_no(ws)
+    management_no = management_no.strip() if management_no else ""
+    if not management_no:
+        management_no = generate_zaiko_no(ws)
+    elif find_zaiko_row(ws, management_no) is not None:
+        raise HTTPException(status_code=400, detail=f"管理番号 '{management_no}' は既に使用されています")
     ws.append_row([management_no, part_no, name, str(qty), base, location, now])
     append_history(user, part_no, f"{name} ({base} - {location})", qty, "zaiko_add")
     return {"management_no": management_no, "part_no": part_no, "name": name, "qty": qty, "base": base, "location": location, "updated_at": now}
@@ -467,6 +471,7 @@ class AdminBogaiEditRequest(BaseModel):
 
 # API ZAIKO Models
 class ZaikoAddRequest(BaseModel):
+    management_no: str = ""
     part_no: str
     name: str
     qty: int
@@ -588,7 +593,7 @@ def use_bogai(body: BogaiUseRequest):
 @app.post("/zaiko/add")
 def add_zaiko_endpoint(body: ZaikoAddRequest):
     if body.qty < 1: raise HTTPException(status_code=400, detail="数量は1以上を入力してください")
-    return add_zaiko(body.part_no, body.name, body.qty, body.base, body.location, body.user)
+    return add_zaiko(body.management_no, body.part_no, body.name, body.qty, body.base, body.location, body.user)
 
 @app.get("/zaiko/search")
 def search_zaiko(query: str = ""):
